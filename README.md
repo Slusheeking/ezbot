@@ -1,46 +1,32 @@
-# EzBot
+# ezbot
 
-A versatile automation bot framework for streamlining repetitive tasks and workflows.
-
-## Description
-
-EzBot is a lightweight, extensible bot framework designed to automate various tasks with minimal setup. Whether you need to automate workflows, handle routine operations, or build custom bot solutions, EzBot provides the foundation you need.
+A Python project for [brief description of what ezbot does].
 
 ## Features
 
-- Simple and intuitive API
-- Extensible plugin architecture
-- Lightweight and fast
-- Easy configuration
-- Cross-platform support
+- [Add features as you develop]
 
 ## Installation
 
 ```bash
-git clone https://github.com/Slusheeking/ezbot.git
-cd ezbot
-# Install dependencies (if any)
-# npm install
-```
-
-## Quick Start
-
-```bash
-# Configure your bot
-cp config.example.json config.json
-
-# Run the bot
-npm start
+pip install -r requirements.txt
 ```
 
 ## Usage
 
-Detailed usage instructions and API documentation coming soon!
+```bash
+python main.py
+```
 
-## Contributing
+## Development
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+This project uses:
+- **Serena**: Semantic code retrieval and editing tools
+- **Context7**: Real-time documentation for third-party libraries
+- **Sequential Thinking**: Structured reasoning for complex technical decisions
 
-## License
+## MCP Configuration
 
-[MIT](https://choosealicense.com/licenses/mit/)
+The project uses MCP (Model Context Protocol) servers configured in the user settings. No .mcp.json file is needed as the servers are configured globally.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
