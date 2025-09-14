@@ -1,0 +1,36 @@
+name: Schedule Claude Task
+
+on:
+  workflow_dispatch:
+    inputs:
+      delay_minutes:
+        description: 'Delay in minutes before creating the task'
+        required: true
+        default: '60'
+        type: string
+      task_prompt:
+        description: 'Task description for Claude'
+        required: true
+        type: string
+
+jobs:
+  schedule-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for specified delay
+        run: sleep ${{ github.event.inputs.delay_minutes }}m
+
+      - name: Create GitHub issue with Claude mention
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueTitle = `Scheduled Task: ${new Date().toISOString().split('T')[0]}`;
+            const issueBody = `@claude\n\n${{ github.event.inputs.task_prompt }}`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: ['claude-scheduled']
+            });
