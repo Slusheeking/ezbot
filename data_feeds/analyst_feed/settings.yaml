@@ -1,0 +1,88 @@
+# Unusual Whales Analyst Feed Configuration
+
+api:
+  base_url: "https://api.unusualwhales.com"
+  endpoint: "/api/screener/analysts"
+  token_env_var: "UNUSUAL_WHALES_API_KEY"
+  rate_limit: 60  # requests per minute
+  timeout: 30  # seconds
+
+collection:
+  # How often to poll for new analyst reports
+  poll_interval: 300  # 5 minutes during market hours
+  after_hours_interval: 900  # 15 minutes after hours
+
+  # Data collection parameters
+  default_limit: 500  # max per request
+  lookback_hours: 24  # Only collect reports from last 24 hours
+
+  # Active hours (EST)
+  market_hours:
+    start: "09:00"
+    end: "16:30"
+
+  extended_hours:
+    start: "04:00"
+    end: "20:00"
+
+filters:
+  # Only collect reports for liquid stocks
+  min_market_cap: 1000000000  # $1B minimum
+
+  # Actions to track
+  track_actions:
+    - "upgraded"
+    - "downgraded"
+    - "initiated"
+    - "target raised"
+    - "target lowered"
+    - "maintained"  # Only if significant target change
+
+  # Recommendations to track
+  track_recommendations:
+    - "buy"
+    - "hold"
+    - "sell"
+
+  # Minimum target price change to be significant
+  min_target_change_percent: 5.0
+
+questdb:
+  # Connection settings
+  host: "localhost"
+  port: 8812  # PostgreSQL interface port
+  database: "qdb"
+
+  # Table names
+  tables:
+    analyst_reports: "analyst_reports"
+    analyst_summary: "analyst_summary"
+
+  # Data retention
+  retention_days: 365
+
+logging:
+  level: "INFO"
+  file: ""
+  max_size_mb: 100
+  backup_count: 5
+
+# Notification settings for significant reports
+alerts:
+  enabled: true
+
+  # Alert criteria
+  significant_upgrade:
+    enabled: true
+    min_target_increase: 10.0  # 10% target increase
+
+  significant_downgrade:
+    enabled: true
+    min_target_decrease: 10.0  # 10% target decrease
+
+  new_coverage:
+    enabled: true
+    min_target: 50.0  # Minimum target price for new coverage
+
+  # Webhook for alerts (optional)
+  webhook_url: ""  # Set if you want Slack/Discord notifications

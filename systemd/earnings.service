@@ -1,0 +1,40 @@
+[Unit]
+Description=Unusual Whales Earnings Feed (Combined Premarket & Afterhours)
+Documentation=https://github.com/ezb0t/ezbot
+After=network.target questdb.service
+Wants=questdb.service
+
+[Service]
+Type=simple
+User=ezb0t
+Group=ezb0t
+WorkingDirectory=/home/ezb0t/ezbot/data_feeds/earnings_feed
+ExecStart=/usr/bin/python3 /home/ezb0t/ezbot/data_feeds/earnings_feed/uw_earnings.py
+Environment=PYTHONPATH=/home/ezb0t/ezbot
+Environment=PYTHONUNBUFFERED=1
+
+# Restart policy
+Restart=always
+RestartSec=30
+StartLimitInterval=300
+StartLimitBurst=5
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=50%
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/ezb0t/.questdb /home/ezb0t/ezbot
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=earnings
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=trading-system.target

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://gofastmcp.com/public/schemas/fastmcp.json/v1.json",
+  "source": {
+    "path": "server.py",
+    "entrypoint": "mcp"
+  },
+  "environment": {
+    "type": "uv",
+    "python": ">=3.10",
+    "dependencies": [
+      "fastmcp>=2.10.0",
+      "httpx>=0.25.0",
+      "python-dotenv>=1.0.0"
+    ]
+  },
+  "deployment": {
+    "transport": "stdio",
+    "log_level": "INFO"
+  },
+  "environment_file": "/home/ezb0t/ezbot/.env"
+}

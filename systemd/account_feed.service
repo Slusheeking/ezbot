@@ -1,0 +1,35 @@
+[Unit]
+Description=Alpaca Account Feed Monitor
+After=network.target questdb.service
+Wants=questdb.service
+Requires=network.target
+
+[Service]
+Type=simple
+User=ezb0t
+Group=ezb0t
+WorkingDirectory=/home/ezb0t/ezbot/account_feed
+ExecStart=/usr/bin/python3 /home/ezb0t/ezbot/account_feed/account_feed.py --scheduled
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/home/ezb0t/ezbot
+
+# Resource limits
+MemoryMax=256M
+CPUQuota=50%
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/ezb0t/ezbot
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

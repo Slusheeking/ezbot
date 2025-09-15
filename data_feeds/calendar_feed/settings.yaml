@@ -1,0 +1,116 @@
+# Unusual Whales Calendar Feed Configuration
+
+api:
+  base_url: "https://api.unusualwhales.com"
+  economic_calendar_endpoint: "/api/market/economic-calendar"
+  fda_calendar_endpoint: "/api/market/fda-calendar"
+  token_env_var: "UNUSUAL_WHALES_API_KEY"
+  rate_limit: 60  # requests per minute
+  timeout: 30  # seconds
+
+collection:
+  # Collection intervals
+  poll_interval: 300  # 5 minutes during trading hours
+  after_hours_interval: 1800  # 30 minutes during extended hours
+
+  # Economic calendar collection
+  economic_calendar_interval: 3600  # 1 hour for economic calendar
+
+  # FDA calendar parameters
+  fda_lookback_days: 7  # Look back 7 days for updated events
+  fda_lookahead_days: 90  # Look ahead 90 days for upcoming events
+
+  # Data collection parameters
+  default_limit: 200  # max per request for FDA calendar
+
+  # Development/Production mode
+  development_mode: true  # Set to false for production
+  dev_collection_interval: 60  # seconds between collections in dev mode
+  production_check_interval: 300  # seconds between time checks in production
+
+  # Active hours (EST) - when to collect more frequently
+  market_hours:
+    start: "06:00"  # 6 AM EST
+    end: "18:00"   # 6 PM EST
+
+  # Extended hours for less frequent collection
+  extended_hours:
+    start: "04:00"  # 4 AM EST
+    end: "20:00"   # 8 PM EST
+
+filters:
+  # Economic calendar filters
+  economic:
+    # Event types to track
+    track_event_types: ["fed-speaker", "fomc", "report"]
+
+    # Minimum importance level (if available in future API updates)
+    min_importance: 1  # 1-5 scale, 1 = low, 5 = high
+
+    # Skip events with no forecast or previous data
+    require_data: false
+
+  # FDA calendar filters
+  fda:
+    # Minimum market cap for companies (in USD)
+    min_market_cap: 100000000  # $100M minimum
+
+    # Only track companies with options
+    require_options: true
+
+    # Event types to track
+    track_catalyst_types: ["PDUFA Date", "Advisory Committee Meeting", "FDA Decision"]
+
+    # Drug indications to prioritize (empty = all)
+    priority_indications: []
+
+    # Exclude certain event types
+    exclude_catalyst_types: []
+
+questdb:
+  # Connection settings
+  host: "localhost"
+  port: 8812  # PostgreSQL interface port
+  database: "qdb"
+
+  # Table names
+  tables:
+    economic_calendar: "economic_calendar"
+    fda_calendar: "fda_calendar"
+
+  # Data retention
+  retention_days: 365  # 1 year
+
+logging:
+  level: "INFO"
+  file: ""
+  max_size_mb: 100
+  backup_count: 5
+
+# Notification settings for significant events
+alerts:
+  enabled: true
+
+  # Economic calendar alerts
+  economic:
+    enabled: true
+    # Alert on Fed speakers and FOMC events
+    high_importance_events: ["fed-speaker", "fomc"]
+
+    # Alert on significant economic indicators
+    important_indicators: ["PCE", "CPI", "NFP", "GDP", "Unemployment"]
+
+  # FDA calendar alerts
+  fda:
+    enabled: true
+    # Alert criteria for FDA events
+    high_impact_catalysts: ["PDUFA Date", "Advisory Committee Meeting"]
+
+    # Minimum market cap for alerts
+    min_market_cap_alert: 1000000000  # $1B
+
+    # Days ahead to alert for upcoming events
+    alert_days_ahead: 7
+
+  # Webhook for alerts (optional)
+  webhook_url: ""  # Set if you want Slack/Discord notifications

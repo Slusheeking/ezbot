@@ -1,0 +1,80 @@
+# Unusual Whales Earnings Feed Configuration
+
+api:
+  base_url: "https://api.unusualwhales.com"
+  premarket_endpoint: "/api/earnings/premarket"
+  afterhours_endpoint: "/api/earnings/afterhours"
+  historical_endpoint: "/api/earnings"
+  token_env_var: "UNUSUAL_WHALES_API_KEY"
+  rate_limit: 60  # requests per minute
+  timeout: 30  # seconds
+
+collection:
+  # Earnings collection intervals
+  premarket_time: "06:00"  # 6 AM EST - collect premarket earnings
+  afterhours_time: "18:00"  # 6 PM EST - collect afterhours earnings
+
+  # Lookahead configuration
+  upcoming_earnings_days: 5  # Look ahead 5 days for upcoming earnings
+  historical_quarters: 8  # Collect 8 quarters of historical data per symbol
+  max_display_upcoming: 10  # Maximum number of upcoming earnings to display
+  max_historical_symbols: 5  # Maximum symbols to fetch historical data for
+
+  # Data collection parameters
+  default_limit: 100  # max per request
+  page_size: 50  # pagination size
+
+  # Development/Production mode
+  development_mode: true  # Set to false for production
+  dev_collection_interval: 30  # seconds between collections in dev mode
+  production_check_interval: 60  # seconds between time checks in production
+
+  # Active hours (EST)
+  market_hours:
+    start: "09:00"
+    end: "16:30"
+
+filters:
+  # Only collect earnings for liquid stocks (relaxed for testing)
+  min_market_cap: 50000000  # $50M minimum (reduced from $500M)
+
+  # Sectors to track (empty = all)
+  track_sectors: []
+
+  # Only track symbols with options (disabled for testing)
+  require_options: false  # Allow all stocks (changed from true)
+
+  # Minimum expected move to be significant (relaxed for testing)
+  min_expected_move_percent: 1.0  # 1% minimum expected move (reduced from 2%)
+
+questdb:
+  # Connection settings
+  host: "localhost"
+  port: 8812  # PostgreSQL interface port
+  database: "qdb"
+
+  # Table names
+  tables:
+    earnings: "earnings"  # Combined premarket and afterhours earnings
+    historical_earnings: "historical_earnings"
+
+  # Data retention
+  retention_days: 730  # 2 years
+
+logging:
+  level: "INFO"
+  file: ""
+  max_size_mb: 100
+  backup_count: 5
+
+# Notification settings for significant earnings
+alerts:
+  enabled: true
+
+  # Alert criteria
+  high_expected_move:
+    enabled: true
+    min_expected_move: 8.0  # 8% expected move
+
+  # Webhook for alerts (optional)
+  webhook_url: ""  # Set if you want Slack/Discord notifications

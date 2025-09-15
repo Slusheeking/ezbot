@@ -1,0 +1,32 @@
+[Unit]
+Description=VIX Volatility Feed Collector
+After=network.target questdb.service
+Wants=questdb.service
+
+[Service]
+Type=simple
+User=ezb0t
+Group=ezb0t
+WorkingDirectory=/home/ezb0t/ezbot
+Environment=PATH=/home/ezb0t/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/home/ezb0t/ezbot
+ExecStart=/usr/bin/python3 /home/ezb0t/ezbot/data_feeds/vix_feed/yfinance_vix_feed.py --scheduled
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vix-feed
+
+# Resource limits
+MemoryMax=256M
+CPUQuota=25%
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/ezb0t/ezbot
+
+[Install]
+WantedBy=multi-user.target
