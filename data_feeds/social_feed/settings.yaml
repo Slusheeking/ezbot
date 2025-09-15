@@ -1,0 +1,248 @@
+# Social Feed Configuration for Financial Data Collection
+# Enhanced for cryptocurrency monitoring with 24/7 market support
+# Supports traditional stocks and crypto symbols with Polygon integration
+
+api:
+  # Reddit API settings
+  reddit:
+    rate_limit: 60  # requests per minute
+    timeout: 30  # seconds
+    max_retries: 3
+    retry_delay: 2  # seconds
+
+collection:
+  # How often to poll for new posts
+  poll_interval: 900  # 15 minutes
+  after_hours_interval: 1800  # 30 minutes after hours
+  weekend_interval: 3600  # 60 minutes on weekends
+
+  # Crypto-specific intervals (24/7 markets)
+  crypto_intervals:
+    high_activity: 600  # 10 minutes during high volatility
+    normal: 900  # 15 minutes normal activity
+    low_activity: 1800  # 30 minutes during quiet periods
+
+  # Data collection parameters
+  max_posts_per_subreddit: 100  # Full posts per subreddit
+  crypto_focused_collection: true  # Enable enhanced crypto processing
+  crypto_post_limit: 150  # Higher limit for crypto subreddits due to 24/7 activity
+  default_subreddits:
+    # Core financial subreddits
+    - "wallstreetbets"
+    - "stocks"
+    - "investing"
+    - "SecurityAnalysis"
+    - "ValueInvesting"
+
+    # High priority for trading strategies
+    - "10xPennyStocks"
+    - "Daytrading"
+    - "pennystocks"
+    - "StockMarket"
+    - "options"
+
+    # Medium priority momentum/swing
+    - "RobinhoodPennystocks"
+    - "SwingTrading"
+    - "SPY"
+    - "smallstreetbets"
+
+    # Specialized channels
+    - "biotech_stocks"
+    - "MillennialBets"
+    - "UnusualWhales"
+    - "Superstonk"
+
+    # Crypto subreddits
+    - "cryptocurrency"
+    - "Bitcoin"
+    - "ethereum"
+    - "CryptoCurrency"
+    - "btc"
+    - "ethtrader"
+    - "CryptoMarkets"
+    - "altcoin"
+    - "bitcoinmarkets"
+    - "CryptoCurrencyTrading"
+
+  # Active hours (EST)
+  market_hours:
+    start: "09:00"
+    end: "16:30"
+
+  extended_hours:
+    start: "04:00"
+    end: "20:00"
+
+filters:
+  # Content filtering
+  min_title_length: 5
+  max_title_length: 300
+  min_content_length: 0
+  max_content_length: 10000
+
+  # Score filtering
+  min_score: 1
+  min_comments: 0
+
+  # Ticker filtering
+  valid_ticker_pattern: "^[A-Z]{1,5}$"
+  excluded_tickers: ["THE", "AND", "FOR", "ARE", "BUT", "NOT", "YOU", "ALL", "NEW", "NOW"]
+
+  # Crypto symbol patterns and mappings
+  crypto_patterns:
+    - "BTC"
+    - "ETH"
+    - "BITCOIN"
+    - "ETHEREUM"
+    - "CRYPTO"
+    - "COIN"
+
+  # Crypto symbol mapping to Polygon format
+  crypto_symbol_mapping:
+    BTC: "X:BTCUSD"
+    BITCOIN: "X:BTCUSD"
+    BTC-USD: "X:BTCUSD"
+    BTCUSD: "X:BTCUSD"
+    ETH: "X:ETHUSD"
+    ETHEREUM: "X:ETHUSD"
+    ETH-USD: "X:ETHUSD"
+    ETHUSD: "X:ETHUSD"
+
+  # Crypto subreddit priorities (for different collection rates)
+  crypto_subreddit_priority:
+    high: ["Bitcoin", "ethereum", "cryptocurrency"]
+    medium: ["CryptoCurrency", "btc", "ethtrader"]
+    low: ["CryptoMarkets", "altcoin", "bitcoinmarkets", "CryptoCurrencyTrading"]
+
+  # Post type filtering
+  track_post_types:
+    - "dd"
+    - "yolo"
+    - "gain"
+    - "loss"
+    - "news"
+    - "discussion"
+    - "question"
+    - "crypto"
+
+processing:
+  # Text processing
+  extract_tickers: true
+  calculate_sentiment: true
+  categorize_posts: true
+
+  # Sentiment analysis
+  enable_basic_sentiment: true
+  sentiment_keywords:
+    bullish: ["bullish", "moon", "rocket", "diamond", "buy", "calls", "green", "up", "bull", "long", "hodl", "pump", "lambo", "ath"]
+    bearish: ["bearish", "crash", "red", "down", "puts", "sell", "bear", "short", "dump", "rekt", "bear market", "correction"]
+
+  # Post categorization
+  category_keywords:
+    dd: ["dd", "due diligence", "research", "analysis", "valuation", "technical analysis"]
+    yolo: ["yolo", "all in", "life savings", "mortgage", "loan", "leveraged"]
+    gain: ["gain", "profit", "tendies", "moon", "diamond hands", "gains", "lambo"]
+    loss: ["loss", "red", "bag holder", "rip", "paper hands", "losses", "rekt"]
+    news: ["news", "breaking", "announcement", "earnings", "report", "adoption", "regulation"]
+    meme: ["meme", "joke", "funny", "wife", "boyfriend", "wsb", "doge", "shib"]
+    crypto: ["bitcoin", "ethereum", "crypto", "hodl", "defi", "nft", "web3", "blockchain"]
+
+questdb:
+  # Connection settings
+  host: "localhost"
+  port: 8812  # PostgreSQL interface port
+  database: "qdb"
+
+  # Table names
+  tables:
+    reddit_posts: "reddit_posts"
+
+  # Data retention
+  retention_days: 90  # Keep posts for 90 days
+
+  # Batch processing
+  batch_size: 100
+  flush_interval: 60  # seconds
+
+logging:
+  level: "INFO"
+  file: "reddit_feed.log"
+  max_size_mb: 100
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Alert settings for significant social activity
+alerts:
+  enabled: true
+
+  # High engagement alerts
+  high_engagement:
+    enabled: true
+    min_score: 1000
+    min_comments: 100
+    time_window: 3600  # 1 hour
+
+  # Ticker mention alerts
+  ticker_mentions:
+    enabled: true
+    min_mentions_threshold: 10  # Alert if ticker gets 10+ mentions in short time
+    time_window: 1800  # 30 minutes
+
+  # YOLO alerts
+  yolo_alerts:
+    enabled: true
+    min_yolo_amount: 10000  # Alert on YOLOs over $10k
+
+  # Crypto-specific alerts
+  crypto_alerts:
+    enabled: true
+    btc_mention_spike: 20  # Alert if BTC mentioned 20+ times in 30 min
+    eth_mention_spike: 15  # Alert if ETH mentioned 15+ times in 30 min
+    hodl_sentiment_threshold: 0.8  # Alert on extreme bullish sentiment
+    panic_sentiment_threshold: 0.2  # Alert on extreme bearish sentiment
+    time_window: 1800  # 30 minutes
+
+  # Webhook for alerts (optional)
+  webhook_url: ""  # Set if you want Slack/Discord notifications
+
+# Crypto-specific queries for analysis
+crypto_queries:
+  # High activity crypto posts
+  trending_crypto: |
+    SELECT subreddit, crypto_symbols, COUNT(*) as post_count,
+           AVG(score) as avg_score, SUM(num_comments) as total_comments
+    FROM reddit_posts
+    WHERE is_crypto = true
+      AND timestamp > dateadd('h', -4, now())
+      AND crypto_symbols != ''
+    GROUP BY subreddit, crypto_symbols
+    ORDER BY post_count DESC, avg_score DESC;
+
+  # Crypto sentiment analysis
+  crypto_sentiment: |
+    SELECT crypto_symbols, sentiment, COUNT(*) as count,
+           AVG(score) as avg_score, AVG(upvote_ratio) as avg_ratio
+    FROM reddit_posts
+    WHERE is_crypto = true
+      AND timestamp > dateadd('h', -2, now())
+      AND crypto_symbols != ''
+    GROUP BY crypto_symbols, sentiment
+    ORDER BY crypto_symbols, count DESC;
+
+  # Top crypto posts by engagement
+  top_crypto_posts: |
+    SELECT title, subreddit, crypto_symbols, score, num_comments,
+           sentiment, permalink, created_utc
+    FROM reddit_posts
+    WHERE is_crypto = true
+      AND score > 100
+      AND timestamp > dateadd('h', -6, now())
+    ORDER BY score DESC, num_comments DESC
+    LIMIT 20;
+
+# Cache settings
+cache:
+  enabled: true
+  ttl: 300  # 5 minutes
+  max_size: 1000  # max cached items
