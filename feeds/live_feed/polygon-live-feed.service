@@ -1,0 +1,58 @@
+[Unit]
+Description=EzBot Polygon Live Data Feed - Real-time market data with TA-Lib analysis
+Documentation=file:///home/ezb0t/ezbot/feeds/live_feed/ENDPOINT.md
+After=network-online.target questdb.service
+Wants=network-online.target
+Requires=questdb.service
+
+[Service]
+Type=simple
+User=ezb0t
+Group=ezb0t
+WorkingDirectory=/home/ezb0t/ezbot/feeds/live_feed
+ExecStart=/usr/bin/python3 /home/ezb0t/ezbot/feeds/live_feed/polygon_data_feed.py
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -TERM $MAINPID
+
+# Environment
+Environment=PYTHONPATH=/home/ezb0t/ezbot
+EnvironmentFile=-/home/ezb0t/ezbot/.env
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=300
+StartLimitBurst=5
+
+# Resource limits
+MemoryMax=2G
+CPUQuota=200%
+TasksMax=100
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/ezb0t/ezbot
+ReadWritePaths=/tmp
+ReadWritePaths=/var/log
+
+# Process limits
+TimeoutStartSec=60
+TimeoutStopSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=polygon-live-feed
+
+# Service timing and staggering for coordinated startup
+# Priority: critical (first to start)
+# Stagger delay: 0s (starts immediately after QuestDB)
+
+[Install]
+WantedBy=multi-user.target
+Alias=ezbot-polygon-feed.service

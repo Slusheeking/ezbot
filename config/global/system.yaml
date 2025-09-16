@@ -1,0 +1,165 @@
+# Global System Configuration
+# Central configuration for the entire EzBot trading system
+
+system:
+  environment: "production"  # development, testing, production
+  version: "2.0.0"
+  log_level: "INFO"
+  timezone: "US/Eastern"
+
+# QuestDB Configuration
+questdb:
+  host: "localhost"
+  port: 8812
+  database: "qdb"
+  user: "admin"
+  password: "quest"
+  pool_size: 20
+  pool_max_overflow: 10
+  connection_timeout: 15
+  query_timeout: 60
+  retry_attempts: 3
+  retry_delay: 2.0
+  batch_size: 1000
+
+# Feed Registry Configuration
+feed_registry:
+  health_check_interval: 60
+  heartbeat_timeout: 300
+  discovery:
+    scan_paths:
+      - "/home/ezb0t/ezbot/feeds"
+      - "/home/ezb0t/ezbot/data_feed"
+    exclude_patterns:
+      - "__pycache__"
+      - ".git"
+      - "test_"
+      - "_test"
+    require_config: true
+
+# Telemetry Configuration
+telemetry:
+  enabled: true
+  retention_days: 90
+  collection_interval: 30
+  batch_size: 500
+
+  # Global health thresholds
+  health_thresholds:
+    cpu_warning: 70.0
+    cpu_critical: 90.0
+    memory_warning: 75.0
+    memory_critical: 90.0
+    execution_time_warning_ms: 10000.0
+    execution_time_critical_ms: 30000.0
+    error_rate_warning: 5.0
+    error_rate_critical: 15.0
+    data_quality_warning: 85.0
+    data_quality_critical: 70.0
+    consecutive_failures_warning: 3
+    consecutive_failures_critical: 8
+
+# Alert System Configuration
+alerts:
+  enabled: true
+
+  # Notification channels
+  channels:
+    webhook:
+      enabled: true
+      url: "${WEBHOOK_URL}"
+      timeout: 10
+      retry_attempts: 3
+
+    console:
+      enabled: true
+      log_level: "WARNING"
+
+    database:
+      enabled: true
+      table: "system_alerts"
+
+  # Alert rules
+  rules:
+    severity_routing:
+      critical: ["webhook", "console", "database"]
+      error: ["webhook", "console", "database"]
+      warning: ["console", "database"]
+      info: ["database"]
+
+    cooldown_minutes:
+      critical: 0
+      error: 5
+      warning: 15
+      info: 60
+
+# Data Validation Configuration
+data_validation:
+  enabled: true
+  strict_mode: false
+  log_validation_errors: true
+
+  # Global validation rules
+  global_rules:
+    max_string_length: 1000
+    required_fields: ["timestamp"]
+    timestamp_formats: ["ISO8601", "UNIX"]
+    null_percentage_threshold: 10.0
+
+# Market Schedule Configuration
+market_schedule:
+  stagger_groups:
+    critical:
+      stagger_interval: 15  # seconds
+      max_feeds: 5
+    high:
+      stagger_interval: 30
+      max_feeds: 8
+    medium:
+      stagger_interval: 60
+      max_feeds: 12
+    low:
+      stagger_interval: 120
+      max_feeds: 15
+
+# Security Configuration
+security:
+  api_keys_env_prefix: "EZBOT_"
+  encrypt_sensitive_logs: false
+  max_log_retention_days: 30
+
+# Performance Configuration
+performance:
+  max_concurrent_feeds: 15
+  feed_timeout_seconds: 300
+  database_pool_timeout: 30
+  memory_limit_mb: 2048
+  cpu_limit_percent: 80
+
+# Environment-specific overrides
+environments:
+  development:
+    log_level: "DEBUG"
+    questdb:
+      pool_size: 5
+    telemetry:
+      collection_interval: 10
+    performance:
+      max_concurrent_feeds: 5
+
+  testing:
+    log_level: "DEBUG"
+    questdb:
+      database: "qdb_test"
+      pool_size: 3
+    telemetry:
+      enabled: false
+    alerts:
+      enabled: false
+
+  production:
+    log_level: "INFO"
+    security:
+      encrypt_sensitive_logs: true
+    performance:
+      max_concurrent_feeds: 20

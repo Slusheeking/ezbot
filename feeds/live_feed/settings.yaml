@@ -1,0 +1,211 @@
+# Live Feed Configuration - Polygon Data Feed
+# Agentic AI Trading System
+
+# Polygon API Configuration
+polygon:
+  api_key: "${POLYGON_API_KEY}"
+  base_url: "https://api.polygon.io"
+  websocket_url: "wss://socket.polygon.io"
+
+  # API Rate Limits
+  rate_limits:
+    stocks: 5  # requests per minute
+    options: 5
+    crypto: 5
+    aggregates: 5
+
+  # Subscription Clusters
+  clusters:
+    stocks: ["stocks"]
+    options: ["options"]
+    crypto: ["crypto"]
+
+# QuestDB Configuration
+questdb:
+  host: "${QUESTDB_HOST:localhost}"
+  port: "${QUESTDB_PORT:9000}"
+  username: "${QUESTDB_USERNAME:admin}"
+  password: "${QUESTDB_PASSWORD:quest}"
+  database: "${QUESTDB_DATABASE:qdb}"
+
+  # Connection Pool
+  pool_size: 10
+  max_connections: 20
+  connection_timeout: 30
+
+  # Table Settings
+  tables:
+    polygon_stocks: "polygon_stocks"
+    polygon_options: "polygon_options"
+    polygon_crypto: "polygon_crypto"
+    polygon_market_status: "polygon_market_status"
+    polygon_trading_halts: "polygon_trading_halts"
+    polygon_snapshots: "polygon_snapshots"
+    agent_analysis: "agent_analysis"
+    agent_coordination: "agent_coordination"
+
+# WebSocket Configuration
+websocket:
+  # Connection Settings
+  max_connections: 5
+  reconnect_attempts: 5
+  reconnect_delay: 5
+  ping_interval: 30
+  ping_timeout: 10
+
+  # Message Handling
+  buffer_size: 10000
+  batch_size: 100
+  flush_interval: 1.0
+
+  # Subscription Management
+  subscriptions:
+    stocks:
+      - "A.*"  # All stock trades
+      - "AM.*" # All stock minute aggregates
+    options:
+      - "T.*"  # All options trades
+    crypto:
+      - "XA.*" # All crypto aggregates
+
+# Technical Analysis Configuration
+talib:
+  # Moving Averages
+  sma_periods: [20, 50, 200]
+  ema_periods: [12, 26, 50]
+
+  # Oscillators
+  rsi_periods: [14, 30]
+  stoch_periods: [14]
+  williams_r_period: 14
+  cci_period: 14
+  mfi_period: 14
+
+  # Trend Indicators
+  macd:
+    fast_period: 12
+    slow_period: 26
+    signal_period: 9
+
+  adx_period: 14
+  atr_period: 14
+
+  # Bollinger Bands
+  bb_period: 20
+  bb_std_dev: 2
+
+  # Volume Indicators
+  obv_enabled: true
+
+  # Minimum data points required
+  min_data_points: 50
+
+  # Data window size for calculations
+  lookback_periods: 200
+
+# Data Processing Configuration
+processing:
+  # Batch Processing
+  batch_size: 1000
+  processing_interval: 1.0
+
+  # Data Validation
+  price_validation:
+    min_price: 0.01
+    max_price: 100000
+    max_change_percent: 50
+
+  volume_validation:
+    min_volume: 0
+    max_volume: 1000000000
+
+  # Data Retention
+  retention_days: 30
+  cleanup_interval: 3600  # 1 hour
+
+  # Error Handling
+  max_retries: 3
+  retry_delay: 1.0
+  error_threshold: 10  # per minute
+
+# Logging Configuration
+logging:
+  level: "${LOG_LEVEL:INFO}"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+  # File Logging
+  file_logging:
+    enabled: true
+    filename: "logs/live_feed.log"
+    max_size: "100MB"
+    backup_count: 5
+
+  # Console Logging
+  console_logging:
+    enabled: true
+
+  # Component-specific levels
+  loggers:
+    polygon_websocket: "DEBUG"
+    talib_processor: "INFO"
+    questdb_writer: "INFO"
+    data_validator: "WARNING"
+
+# Monitoring Configuration
+monitoring:
+  # Metrics Collection
+  metrics_enabled: true
+  metrics_interval: 60  # seconds
+
+  # Health Checks
+  health_check_interval: 30
+
+  # Alerts
+  alerts:
+    connection_failure: true
+    data_lag_threshold: 30  # seconds
+    error_rate_threshold: 5  # per minute
+    memory_threshold: 80  # percent
+
+  # Performance Thresholds
+  performance:
+    max_latency: 1.0  # seconds
+    min_throughput: 100  # messages per second
+
+# Agent Integration
+agents:
+  # Multi-agent coordination
+  coordination_enabled: true
+
+  # Agent Types
+  agent_types:
+    - fundamental
+    - technical
+    - sentiment
+    - options_flow
+    - research_coordinator
+    - strategy_execution
+    - risk_management
+
+  # Analysis Settings
+  analysis:
+    confidence_threshold: 0.7
+    consensus_threshold: 0.8
+    update_interval: 60  # seconds
+
+  # Risk Management
+  risk:
+    max_position_size: 0.02  # 2% of portfolio
+    stop_loss_threshold: 0.05  # 5%
+    profit_target: 0.10  # 10%
+
+# Environment
+environment: "${ENVIRONMENT:development}"
+
+# Feature Flags
+features:
+  real_time_analysis: true
+  paper_trading: true
+  live_trading: false
+  backtesting: true
+  alerts_enabled: true
